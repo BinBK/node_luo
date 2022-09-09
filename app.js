@@ -2,8 +2,12 @@
 const express = require('express')
 // 创建 express 的服务器实例
 const app = express()
+const cors  = require('cors')
+
 //解析表单数据中间件
+app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cors())
 const joi = require('joi')
 
 const config = require('./config')
@@ -22,6 +26,16 @@ app.use(function (req, res, next) {
   }
   next()
 })
+// 设置跨域
+// app.all("*", function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*"); //设置允许跨域的域名，*代表允许任意域名跨域
+//   res.header("Access-Control-Allow-Headers", "content-type"); //允许的header类型
+//   res.header("Access-Control-Allow-Methods", "DELETE,PUT,POST,GET,OPTIONS"); //跨域允许的请求方式
+//   if (req.method.toLowerCase() == 'options')
+//       res.send(200); //让options尝试请求快速结束
+//   else
+//       next();
+// });
 
 // 使用 .unless({ path: [/^\/api\//] }) 指定哪些接口不需要进行 Token 的身份认证
 app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] }))
@@ -29,6 +43,17 @@ app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] 
 //路由
 const userRouter = require('./router/user')
 app.use('/api',userRouter)
+
+// 导入并使用用户信息路由模块
+const userinfoRouter = require('./router/userinfo')
+// 注意：以 /my 开头的接口，都是有权限的接口，需要进行 Token 身份认证
+app.use('/my', userinfoRouter)
+
+
+//书的路由
+const books = require('./router/book')
+app.use('/book',books)
+
 
 // 错误中间件
 app.use(function (err, req, res, next) {

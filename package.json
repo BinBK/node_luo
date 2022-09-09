@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@escook/express-joi": "^1.1.1",
+    "cors": "^2.8.5",
     "@hapi/joi": "^17.1.0",
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
